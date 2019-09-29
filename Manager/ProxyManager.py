@@ -46,7 +46,9 @@ class ProxyManager(object):
             self.log.info("ProxyFetch - {func}: start".format(func=proxyGetter))
             try:
                 for proxy in getattr(GetFreeProxy, proxyGetter.strip())():
-                    proxy = proxy.strip()
+                    proxy_all = proxy.strip()
+                    proxy = proxy_all.split("|")[0]
+                    p_type = proxy_all.split("|")[1]
 
                     if not proxy or not verifyProxyFormat(proxy):
                         self.log.error('ProxyFetch - {func}: '
@@ -59,11 +61,12 @@ class ProxyManager(object):
                     else:
                         self.log.info('ProxyFetch - {func}: '
                                       '{proxy} success'.format(func=proxyGetter, proxy=proxy.ljust(20)))
-                        self.db.put(Proxy(proxy, source=proxyGetter))
+                        print "{} get_sucess".format(proxy)
+                        self.db.put(Proxy(proxy, proxy_type=p_type, source=proxyGetter))
                         proxy_set.add(proxy)
             except Exception as e:
                 self.log.error("ProxyFetch - {func}: error".format(func=proxyGetter))
-                self.log.error(str(e))
+                # self.log.error(str(e))
 
     def get(self):
         """

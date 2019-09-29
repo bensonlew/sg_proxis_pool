@@ -17,10 +17,11 @@ from pymongo import MongoClient
 
 
 class MongodbClient(object):
-    def __init__(self, name, host, port, **kwargs):
+    def __init__(self, name, host, port, password, **kwargs):
         self.name = name
-        self.client = MongoClient(host, port, **kwargs)
-        self.db = self.client.proxy
+        # self.client = MongoClient(host, int(port), port, password, **kwargs)
+        self.client = MongoClient("mongodb://{}:{}@{}/sanger_denovo_assembly?authMechanism=SCRAM-SHA-1".format(name, password, host), connect=True)
+        self.db = self.client['sanger_denovo_assembly']
 
     def changeTable(self, name):
         self.name = name
@@ -30,10 +31,16 @@ class MongodbClient(object):
         return data['num'] if data != None else None
 
     def put(self, proxy, num=1):
-        if self.db[self.name].find_one({'proxy': proxy}):
+        #print "insert mongo {}".format(proxy)
+        # print "insert mongo {}".format(proxy.info_dict)
+        proxy_dict = proxy.info_dict
+        proxy_dict.update({"num": 1})
+        #proxy.info_dict()
+        # print "db is {}\n name is {}\n dict is {}".format(self.db, self.name, proxy_dict)
+        if self.db[self.name].find_one({'proxy': proxy_dict["proxy"]}):
             return None
         else:
-            self.db[self.name].insert({'proxy': proxy, 'num': num})
+            self.db[self.name].insert(proxy_dict)
 
     def pop(self):
         data = list(self.db[self.name].aggregate([{'$sample': {'size': 1}}]))
@@ -51,7 +58,11 @@ class MongodbClient(object):
         return {p['proxy']: p['num'] for p in self.db[self.name].find()}
 
     def clean(self):
-        self.client.drop_database('proxy')
+        pass
+        # self.client.drop_database('proxy')
+
+    def clear(self):
+        pass
 
     def delete_all(self):
         self.db[self.name].remove()

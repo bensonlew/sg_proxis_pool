@@ -33,10 +33,17 @@ HEADER = """
 
 PY3 = sys.version_info >= (3,)
 
-DB_TYPE = getenv('db_type', 'SSDB').upper()
-DB_HOST = getenv('db_host', '127.0.0.1')
-DB_PORT = getenv('db_port', '8080')
-DB_PASSWORD = getenv('db_password', '')
+# DB_TYPE = getenv('db_type', 'SSDB').upper()
+# DB_HOST = getenv('db_host', '127.0.0.1')
+# DB_PORT = getenv('db_port', '8080')
+# DB_PASSWORD = getenv('db_password', '')
+
+DB_TYPE = "MONGODB"
+DB_HOST = "10.8.0.203"
+DB_PORT = "27017"
+DB_NAME = "rna"
+DB_PASSWORD = "y6a3t5n1w0y7"
+
 
 
 """ 数据库配置 """
@@ -45,7 +52,7 @@ DATABASES = {
         "TYPE": DB_TYPE,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
-        "NAME": "proxy",
+        "NAME": DB_NAME,
         "PASSWORD": DB_PASSWORD
     }
 }
@@ -76,7 +83,7 @@ class ConfigError(BaseException):
 
 
 def checkConfig():
-    if DB_TYPE not in ["SSDB", "REDIS"]:
+    if DB_TYPE not in ["SSDB", "REDIS", "MONGODB"]:
         raise ConfigError('db_type Do not support: %s, must SSDB/REDIS .' % DB_TYPE)
 
     if not DB_PORT.isdigit():
