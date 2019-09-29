@@ -69,6 +69,8 @@ PROXY_GETTER = [
     "freeProxy07",
     "freeProxy08",
     "freeProxy09",
+    "freeProxy20",
+    "freeProxy30",
 ]
 
 """ API config http://127.0.0.1:5010 """
